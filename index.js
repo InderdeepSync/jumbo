@@ -6,6 +6,9 @@ app.use(express.json());
 const authRouter = require("./auth")
 app.use("/", authRouter)
 
+const videosRouter = require("./video");
+app.use("/videos", videosRouter);
+
 const {authenticateToken} = require("./middleware");
 
 app.get('/watch-later', authenticateToken, async (req, res) => {
