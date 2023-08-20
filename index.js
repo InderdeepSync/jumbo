@@ -10,10 +10,26 @@ app.use(express.json());
 
 const secretKey = 'your-secret-key'; // Change this to your own secret key
 
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 // Register a new user
 app.post('/register', async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: 'Invalid email address' });
+        }
+
+        // Check if a user with the same email already exists
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email is already registered.' });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.user.create({
@@ -23,10 +39,10 @@ app.post('/register', async (req, res) => {
             },
         });
 
-        res.json({ message: 'User registered successfully' });
+        res.json({ message: `New User ${user.email} registered successfully` });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred' });
+        res.status(500).json({ error: 'An Unexpected Error occurred' });
     }
 });
 
@@ -35,15 +51,19 @@ app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: 'Invalid email address' });
+        }
+
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: `User ${email} does not exist.` });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const doesPasswordMatch = await bcrypt.compare(password, user.password);
 
-        if (!passwordMatch) {
+        if (!doesPasswordMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
@@ -52,7 +72,7 @@ app.post('/login', async (req, res) => {
         res.json({ token });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred' });
+        res.status(500).json({ error: 'An Unexpected Error occurred' });
     }
 });
 
@@ -64,13 +84,7 @@ app.get('/logout', (req, res) => {
 app.get('/watch-later', authenticateToken, async (req, res) => {
     try {
         const userId = req.userId; // This value is set in the authenticateToken middleware
-        const user = await prisma.user.findUnique({ where: { id: userId } });
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json({ username: user.username, email: user.email });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred' });
