@@ -14,6 +14,7 @@ model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
   password String
+  watchLater   Video[]
 }
 
 model Video {
@@ -23,4 +24,5 @@ model Video {
   publishedAt  DateTime
   thumbnailUrl String?
   videoUrl     String
+  watchLaterUsers User[]
 }

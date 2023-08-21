@@ -9,17 +9,8 @@ app.use("/", authRouter)
 const videosRouter = require("./video");
 app.use("/videos", videosRouter);
 
-const {authenticateToken} = require("./middleware");
-
-app.get('/watch-later', authenticateToken, async (req, res) => {
-    try {
-        const userId = req.userId; // This value is set in the authenticateToken middleware
-        res.json({ "aa": 1 });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred' });
-    }
-});
+const watchLaterRouter = require("./watchLater");
+app.use("/watch-later", watchLaterRouter);
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
