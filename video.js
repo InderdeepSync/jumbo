@@ -2,6 +2,7 @@ const express = require("express");
 
 const { prisma } = require("./db")
 const {authenticateToken} = require("./middleware");
+const {fetchVideos} = require("./yt");
 
 const router = express.Router();
 
@@ -82,8 +83,8 @@ async function createVideo() {
 
 
 router.post("/create", async (req, res) => {
-   await createVideo();
-   return res.json({"status": "CREATED"});
+   const videos = await fetchVideos();
+   return res.json({"status": "CREATED", videos});
 });
 
 module.exports = router;
