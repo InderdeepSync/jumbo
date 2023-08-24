@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { prisma } = require("./db");
 
-const apiKey = "AIzaSyAOh3hwF-EAyMQj-ww0Y_YQhDZwBAWknxY"
+const apiKey = process.env.YOUTUBE_API_KEY
 
 function getRFC3339DateTimeTwoHoursAgo() {
     const now = new Date();
@@ -18,6 +18,7 @@ function getRFC3339DateTimeTwoHoursAgo() {
 }
 
 async function fetchVideos() {
+    console.log("TimeStamp: ", new Date());
     console.log('Fetching YouTube videos...');
     const twoHoursAgo = getRFC3339DateTimeTwoHoursAgo();
 
