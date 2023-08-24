@@ -23,6 +23,6 @@ model Video {
   description  String?
   publishedAt  DateTime
   thumbnailUrl String?
-  videoUrl     String
+  videoUrl     String @unique
   watchLaterUsers User[]
 }
