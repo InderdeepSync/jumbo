@@ -13,7 +13,7 @@ function authenticateToken(req, res, next) {
 
     jwt.verify(token, secretKey, (err, decoded) => {
         if (err) {
-            return res.json({"status": "ACCESS_DENIED"}).sendStatus(403);
+            return res.status(403).json({"status": "ACCESS_DENIED"});
         }
 
         req.userId = decoded.userId;
